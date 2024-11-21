@@ -9,9 +9,14 @@ import os
 env_path = Path('.') / '.env.local'
 load_dotenv(dotenv_path=env_path)
 
-from .routes import chat
-
-app = FastAPI()
+app = FastAPI(
+    title="Claude API",
+    description="API for interacting with Claude.ai",
+    version="1.0.0",
+    docs_url="/api/docs",
+    openapi_url="/api/openapi.json",
+    redoc_url="/api/redoc"
+)
 
 # CORS configuration
 app.add_middleware(
@@ -22,8 +27,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include chat routes
-app.include_router(chat.router)
+from .routes import chat
+app.include_router(chat.router, prefix="/api")
 
 @app.get("/api/health")
 async def health_check():
@@ -38,9 +43,5 @@ async def health_check():
         "claude_session_key": "configured"
     }
 
-# Handler for AWS Lambda/Vercel
-handler = Mangum(app)
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+# Handler for Vercel
+handler = Mangum(app, api_gateway_base_path="/api")
