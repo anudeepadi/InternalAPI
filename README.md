@@ -1,99 +1,217 @@
-<<<<<<< HEAD
 # InternalAPI
-=======
-# ClaudeSync
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![PyPI](https://badge.fury.io/py/claudesync.svg)](https://pypi.org/project/claudesync/)
-[![Release](https://img.shields.io/github/release/jahwag/claudesync.svg)](https://github.com/jahwag/claudesync/releases)
-[![Build Status](https://github.com/jahwag/ClaudeSync/actions/workflows/python-package.yml/badge.svg)](https://github.com/jahwag/ClaudeSync/actions/workflows/python-package.yml)
-[![Issues](https://img.shields.io/github/issues/jahwag/claudesync)](https://github.com/jahwag/claudesync/issues)
-[![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Dependencies](https://img.shields.io/librariesio/github/jahwag/claudesync)](https://github.com/jahwag/claudesync/network/dependencies)
-[![Last Commit](https://img.shields.io/github/last-commit/jahwag/claudesync.svg)](https://github.com/jahwag/claudesync/commits/main)
-[![Sponsor jahwag](https://img.shields.io/badge/Sponsor-♥-red)](https://github.com/sponsors/jahwag)
-
-
-ClaudeSync bridges your local development environment with Claude.ai projects, enabling seamless synchronization to enhance your AI-powered workflow.
-
-![ClaudeSync in Action](claudesync.gif)
-
-## ⚠️ Disclaimer
-
-ClaudeSync is an independent, open-source project **not affiliated** with Anthropic or Claude.ai. By using ClaudeSync, you agree to:
-
-1. Use it at your own risk.
-2. Acknowledge potential violation of Anthropic's Terms of Service.
-3. Assume responsibility for any consequences.
-4. Understand that Anthropic does not support this tool.
-
-Please review [Anthropic's Terms of Service](https://www.anthropic.com/legal/consumer-terms) before using ClaudeSync.
+A FastAPI-based internal API system designed for efficient task management, worker processes, and database connections.
 
 ## 🌟 Features
 
-- **File sync**: Synchronize local files with [Claude.ai projects](https://www.anthropic.com/news/projects).
-- **Cross-Platform**: Compatible with [Windows, macOS, and Linux](https://github.com/jahwag/ClaudeSync/releases).
-- **Configurable**: Plenty of [configuration options](https://github.com/jahwag/ClaudeSync/wiki/Quick-reference).
-- **Integrate**: Designed to be easy to integrate into your pipelines.
-- **Secure**: Ensures data privacy and security.
+- **Fast and Efficient**: Built with FastAPI and async operations
+- **Multi-Worker Support**: Utilizes uvicorn workers for parallel processing
+- **Secure Authentication**: JWT token-based authentication
+- **Auto Documentation**: Swagger/OpenAPI documentation
+- **Database Connection**: SQLite (or other database) integration
+- **Type Safety**: Pydantic models for request/response validation
+- **Cross-Origin Support**: Configured CORS for secure access
 
-## ⚙️ Prerequisites
+## 🛠️ Tech Stack
 
-### 📄 Supported Claude.ai plans
+- **Framework**: FastAPI v0.7+
+- **Server**: Uvicorn with Gunicorn workers
+- **Python**: Version 3.8+
+- **Database**: SQLite (configurable)
+- **Authentication**: JWT (jose library)
+- **Validation**: Pydantic v2
+- **Testing**: pytest
+- **Documentation**: Swagger/OpenAPI
 
-| [Plan](https://www.anthropic.com/pricing)   | Supported |
-|--------|-----------|
-| Pro    | ✅        |
-| Team   | ✅        |
-| Free   | ❌        |
+## 📁 Project Structure
 
-### 🔑 SSH Key
+```
+InternalAPI/
+├── api/
+│   ├── __init__.py
+│   ├── auth/
+│   │   ├── __init__.py
+│   │   ├── jwt.py           # JWT handling
+│   │   └── utils.py         # Auth utilities
+│   ├── core/
+│   │   ├── __init__.py
+│   │   ├── config.py        # Configuration
+│   │   └── security.py      # Security settings
+│   ├── crud/
+│   │   ├── __init__.py
+│   │   └── base.py          # CRUD operations
+│   ├── database/
+│   │   ├── __init__.py
+│   │   └── session.py       # DB session
+│   ├── models/
+│   │   ├── __init__.py
+│   │   └── user.py          # Data models
+│   ├── routes/
+│   │   ├── __init__.py
+│   │   ├── auth.py          # Auth routes
+│   │   └── api.py           # API routes
+│   ├── schemas/
+│   │   ├── __init__.py
+│   │   └── user.py          # Pydantic schemas
+│   └── main.py              # FastAPI application
+├── tests/
+│   ├── __init__.py
+│   └── test_api.py
+├── requirements.txt
+├── .env
+└── README.md
+```
 
-Ensure you have an SSH key for secure credential storage. Follow [GitHub's guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh) to generate and add your SSH key.
+## 🚀 Getting Started
 
-### 💻 Software
+1. **Clone the repository**
+```bash
+git clone https://github.com/anudeepadi/InternalAPI.git
+cd InternalAPI
+```
 
-- **Python**: ≥ [3.10](https://www.python.org/downloads/)
-- **pip**: [Python package installer](https://pip.pypa.io/en/stable/installation/)
+2. **Set up virtual environment**
+```bash
+python -m venv venv
+source venv/bin/activate  # Windows: .\venv\Scripts\activate
+```
 
-## 🚀 Quick Start
+3. **Install dependencies**
+```bash
+pip install -r requirements.txt
+```
 
-1. **Install ClaudeSync**
-    ```shell
-    pip install claudesync
-    ```
+4. **Create environment file**
+```bash
+cp .env.example .env
+# Update with your configurations
+```
 
-2. **Authenticate**
-    ```shell
-    claudesync auth login
-    ```
+5. **Run the server**
+```bash
+# Development
+uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
 
-3. **Create a Project**
-    ```shell
-    claudesync project create
-    ```
+# Production
+gunicorn api.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
+```
 
-4. **Start Syncing***
-    ```shell
-    claudesync push
-    ```
-    **This is a one-way sync. Files not present locally will be removed from the Claude.ai project unless pruning is [disabled](https://github.com/jahwag/ClaudeSync/wiki/Quick-reference#pruning-remote).*
+## 📝 Environment Variables
 
-📚 [Detailed Guides & FAQs](https://github.com/jahwag/claudesync/wiki)
+```env
+# .env example
+API_TITLE=Internal API
+API_VERSION=v1
+DEBUG=True
+SECRET_KEY=your-secret-key-here
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+DATABASE_URL=sqlite:///./sql_app.db
+CORS_ORIGINS=["http://localhost:3000"]
+```
 
-## 🤝 Support & Contribute
+## 🔑 API Endpoints
 
-Enjoying ClaudeSync? Support us by:
+### Authentication
+```
+POST /api/token
+    - Get access token
+    - Body: username, password
+    - Returns: access_token, token_type
 
-- ⭐ [Starring the Repository](https://github.com/jahwag/claudesync)
-- 🐛 [Reporting Issues](https://github.com/jahwag/claudesync/issues)
-- 🌍 [Contributing](CONTRIBUTING.md)
-- 💬 [Join Our Discord](https://discord.gg/pR4qeMH4u4)
-- 💖 [Sponsor Us](https://github.com/sponsors/jahwag)
+POST /api/token/refresh
+    - Refresh access token
+    - Header: Authorization: Bearer {token}
+    - Returns: new access_token
+```
 
-Your contributions help improve ClaudeSync!
+### Users
+```
+GET /api/users/
+    - Get all users
+    - Requires: Authentication
+
+POST /api/users/
+    - Create new user
+    - Body: UserCreate schema
+
+GET /api/users/{user_id}
+    - Get user by ID
+    - Requires: Authentication
+
+PUT /api/users/{user_id}
+    - Update user
+    - Requires: Authentication
+    - Body: UserUpdate schema
+
+DELETE /api/users/{user_id}
+    - Delete user
+    - Requires: Authentication
+```
+
+## 📚 Documentation
+
+After starting the server, access:
+- Swagger UI: `http://localhost:8000/docs`
+- ReDoc: `http://localhost:8000/redoc`
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=api tests/
+
+# Generate coverage report
+pytest --cov=api --cov-report=html tests/
+```
+
+## 🔒 Security Features
+
+- JWT Authentication
+- Password hashing
+- Rate limiting
+- CORS protection
+- Input validation
+- SQL injection prevention
+- XSS protection
+
+## 🚀 Deployment
+
+1. **Build and Install**
+```bash
+pip install "uvicorn[standard]" gunicorn
+```
+
+2. **Run in Production**
+```bash
+gunicorn api.main:app \
+    --workers 4 \
+    --worker-class uvicorn.workers.UvicornWorker \
+    --bind 0.0.0.0:8000 \
+    --access-logfile - \
+    --error-logfile -
+```
+
+## 📝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/YourFeature`)
+3. Commit changes (`git commit -m 'Add YourFeature'`)
+4. Push to branch (`git push origin feature/YourFeature`)
+5. Open a Pull Request
+
+## 📧 Contact
+
+- GitHub: [@anudeepadi](https://github.com/anudeepadi)
+- Email: contact@anudeepadi.me
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-[Contributors](https://github.com/jahwag/claudesync/graphs/contributors) • [License](https://github.com/jahwag/claudesync/blob/master/LICENSE) • [Report Bug](https://github.com/jahwag/claudesync/issues) • [Request Feature](https://github.com/jahwag/claudesync/issues/new?labels=enhancement&template=feature_request.md)• [Sponsor](https://github.com/sponsors/jahwag)
->>>>>>> 8045467 (Added web dev support fixed api)
+⭐️ If you find this project useful, please give it a star!
